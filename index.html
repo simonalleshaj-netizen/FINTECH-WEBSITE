@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Familja Ledger — Banka jote familjare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== TOAST CONTAINER ===================== -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ===================== AUTH SCREEN ===================== -->
+<section id="authScreen" class="auth-screen">
+  <div class="auth-grain"></div>
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-mark">FL</div>
+      <div class="brand-text">
+        <span class="brand-name">Familja Ledger</span>
+        <span class="brand-tag">Banka e vogël e shtëpisë tënde</span>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Hyr</button>
+        <button class="auth-tab" data-tab="register">Krijo familje</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <p class="auth-hint">Zgjedh profilin tënd për të hyrë në llogari demo.</p>
+        <div id="loginProfiles" class="profile-grid"></div>
+        <div class="field">
+          <label for="loginPin">Kodi PIN (4 shifra)</label>
+          <input type="password" id="loginPin" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Hyr në llogari</button>
+        <p class="auth-foot">PIN demo për të gjithë: <strong>1234</strong></p>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form">
+        <p class="auth-hint">Krijo familjen tënde nga e para — do të bëhesh Prind/Admin.</p>
+        <div class="field">
+          <label for="famName">Emri i familjes</label>
+          <input type="text" id="famName" placeholder="p.sh. Familja Hoxha" required>
+        </div>
+        <div class="field">
+          <label for="parentName">Emri yt (Prind)</label>
+          <input type="text" id="parentName" placeholder="p.sh. Arta" required>
+        </div>
+        <div class="field">
+          <label for="famPin">Krijo PIN (4 shifra)</label>
+          <input type="password" id="famPin" inputmode="numeric" maxlength="4" placeholder="••••" required>
+        </div>
+        <div class="field">
+          <label for="famStart">Fondi fillestar i familjes (€)</label>
+          <input type="number" id="famStart" placeholder="1000" min="0" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Krijo familjen</button>
+        <p class="auth-foot">Kjo do të fshijë familjen demo ekzistuese (vetëm në këtë shfletues).</p>
+      </form>
+    </div>
+
+    <p class="auth-disclaimer">Projekt diplome · Demo lokale · Të dhënat ruhen vetëm në këtë shfletues (localStorage)</p>
+  </div>
+</section>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="appShell" class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="brand-mark small">FL</div>
+      <div class="sidebar-fam">
+        <span id="sbFamName" class="sidebar-fam-name">Familja</span>
+        <span id="sbRole" class="sidebar-role">Prind</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span>Paneli</span>
+      </button>
+      <button class="nav-item" data-view="wallets">
+        <svg viewBox="0 0 24 24"><path d="M21 7H3a1 1 0 0 0-1 1v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a1 1 0 0 0-1-1zM3 5h14v2H3a2 2 0 0 1 0-4zM18 14a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+        <span>Portofolet</span>
+      </button>
+      <button class="nav-item" data-view="transfer">
+        <svg viewBox="0 0 24 24"><path d="M2 12l6-6v4c6 0 9 2 11 6-3-2-6-3-11-3v4z" transform="scale(-1,1) translate(-24,0)"/></svg>
+        <span>Transferta</span>
+      </button>
+      <button class="nav-item" data-view="history">
+        <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 1 1 2 4.9l-1.42 1.41A9 9 0 1 0 13 3zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8z"/></svg>
+        <span>Historiku</span>
+      </button>
+      <button class="nav-item" data-view="goals">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-14a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4zm0-6a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/></svg>
+        <span>Qëllimet</span>
+      </button>
+      <button class="nav-item parent-only" data-view="controls">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <span>Kontrolli</span>
+      </button>
+      <button class="nav-item" data-view="advisor">
+        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7zM9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+        <span>Këshilltari AI</span>
+      </button>
+    </nav>
+
+    <button id="logoutBtn" class="sidebar-logout">
+      <svg viewBox="0 0 24 24"><path d="M16 17v-2H9v-2h7v-2l4 3-4 3M14 2a2 2 0 0 1 2 2v3h-2V4H6v16h8v-3h2v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8z"/></svg>
+      <span>Dil</span>
+    </button>
+  </aside>
+
+  <!-- MOBILE TOPBAR -->
+  <div class="mobile-topbar">
+    <div class="brand-mark small">FL</div>
+    <span id="mobFamName">Familja</span>
+    <button id="mobMenuBtn" class="mob-menu-btn">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 id="viewTitle">Mirëmbrëma, <span id="topUserName">Prind</span></h1>
+        <p id="viewSubtitle" class="topbar-sub">Ja si duket gjendja e familjes sot.</p>
+      </div>
+      <div class="topbar-right">
+        <button id="notifBtn" class="icon-btn notif-btn">
+          <svg viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5a6 6 0 0 0-4-5.65V4a2 2 0 0 0-4 0v1.35A6 6 0 0 0 6 11v5l-2 2v1h16v-1z"/></svg>
+          <span id="notifDot" class="notif-dot hidden"></span>
+        </button>
+        <div class="user-chip">
+          <div id="userAvatar" class="avatar">A</div>
+          <span id="userChipName">Arta</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div id="notifPanel" class="notif-panel hidden">
+      <div class="notif-panel-head">
+        <span>Njoftimet</span>
+        <button id="clearNotifBtn">Pastro</button>
+      </div>
+      <div id="notifList" class="notif-list"></div>
+    </div>
+
+    <!-- ===================== VIEW: DASHBOARD ===================== -->
+    <section id="view-dashboard" class="view active">
+
+      <div class="stat-row">
+        <div class="stat-card hero-stat">
+          <span class="stat-label">Bilanci total i familjes</span>
+          <span id="totalBalance" class="stat-value">€0.00</span>
+          <span class="stat-foot">Nëpër të gjitha portofolet</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Shpenzime këtë muaj</span>
+          <span id="monthSpend" class="stat-value alt">€0.00</span>
+          <span id="monthSpendDelta" class="stat-foot"></span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Anëtarë aktivë</span>
+          <span id="memberCount" class="stat-value alt">0</span>
+          <span class="stat-foot">Portofole në familje</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Kursimet drejt qëllimeve</span>
+          <span id="goalsSaved" class="stat-value alt">€0.00</span>
+          <span class="stat-foot">Gjithsej i kursyer</span>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel chart-panel">
+          <div class="panel-head">
+            <h3>Trendi i shpenzimeve — 6 muajt e fundit</h3>
+          </div>
+          <canvas id="trendChart" height="220"></canvas>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Kush shpenzon më shumë</h3>
+          </div>
+          <canvas id="spenderChart" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Shpenzimet sipas kategorisë</h3>
+          </div>
+          <canvas id="categoryChart" height="220"></canvas>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Pema e familjes</h3>
+            <span class="panel-sub">Rrjedha e fondeve nga llogaria kryesore</span>
+          </div>
+          <div id="familyTree" class="family-tree"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Aktiviteti i fundit</h3>
+          <button class="link-btn" data-goto="history">Shiko gjithë historikun →</button>
+        </div>
+        <div id="recentActivity" class="activity-list"></div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: WALLETS ===================== -->
+    <section id="view-wallets" class="view">
+      <div class="view-head-row">
+        <div>
+          <h2>Portofolet e familjes</h2>
+          <p class="muted">Çdo anëtar ka portofolin e tij brenda ekosistemit.</p>
+        </div>
+        <button id="addMemberBtn" class="btn btn-primary parent-only">+ Shto anëtar</button>
+      </div>
+      <div id="walletGrid" class="wallet-grid"></div>
+    </section>
+
+    <!-- ===================== VIEW: TRANSFER ===================== -->
+    <section id="view-transfer" class="view">
+      <div class="view-head-row">
+        <div>
+          <h2>Transferta &amp; kërkesa</h2>
+          <p class="muted">Dërgo para brenda familjes ose kërko nga prindi.</p>
+        </div>
+      </div>
+
+      <div class="transfer-grid">
+        <div class="panel">
+          <div class="panel-head"><h3>Dërgo para</h3></div>
+          <form id="sendForm" class="stack-form">
+            <div class="field">
+              <label for="sendFrom">Nga portofoli</label>
+              <select id="sendFrom" required></select>
+            </div>
+            <div class="field">
+              <label for="sendTo">Tek portofoli</label>
+              <select id="sendTo" required></select>
+            </div>
+            <div class="field">
+              <label for="sendAmount">Shuma (€)</label>
+              <input type="number" id="sendAmount" min="0.01" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="field">
+              <label for="sendNote">Shënim (opsionale)</label>
+              <input type="text" id="sendNote" placeholder="p.sh. Pakica e javës">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Dërgo tani</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>Kërko para nga prindi</h3></div>
+          <form id="requestForm" class="stack-form child-only">
+            <div class="field">
+              <label for="reqAmount">Shuma e kërkuar (€)</label>
+              <input type="number" id="reqAmount" min="0.01" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="field">
+              <label for="reqReason">Arsyeja</label>
+              <input type="text" id="reqReason" placeholder="p.sh. Libra shkolle" required>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-block">Dërgo kërkesën</button>
+          </form>
+
+          <div class="parent-only">
+            <div class="panel-head"><h3>Kërkesat në pritje</h3></div>
+            <div id="pendingRequests" class="pending-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: HISTORY ===================== -->
+    <section id="view-history" class="view">
+      <div class="view-head-row">
+        <div>
+          <h2>Historiku i transaksioneve</h2>
+          <p class="muted">Çdo lëvizje parash e regjistruar dhe e filtrueshme.</p>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <select id="filterPerson"><option value="all">Të gjithë anëtarët</option></select>
+        <select id="filterCategory">
+          <option value="all">Të gjitha kategoritë</option>
+          <option value="allowance">Allowance</option>
+          <option value="food">Ushqim</option>
+          <option value="fastfood">Fast Food</option>
+          <option value="games">Lojëra</option>
+          <option value="school">Shkollë</option>
+          <option value="saving">Kursim</option>
+          <option value="transfer">Transfer i brendshëm</option>
+          <option value="other">Tjetër</option>
+        </select>
+        <select id="filterType">
+          <option value="all">Të gjitha llojet</option>
+          <option value="in">Hyrje</option>
+          <option value="out">Dalje</option>
+        </select>
+        <input type="text" id="filterSearch" placeholder="Kërko sipas shënimit...">
+      </div>
+
+      <div class="panel">
+        <table class="tx-table">
+          <thead>
+            <tr><th>Data</th><th>Anëtari</th><th>Përshkrimi</th><th>Kategoria</th><th>Shuma</th></tr>
+          </thead>
+          <tbody id="txTableBody"></tbody>
+        </table>
+        <p id="txEmpty" class="empty-state hidden">Nuk u gjet asnjë transaksion me këto filtra.</p>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: GOALS ===================== -->
+    <section id="view-goals" class="view">
+      <div class="view-head-row">
+        <div>
+          <h2>Qëllimet e kursimit</h2>
+          <p class="muted">Çdo fëmijë mund të kursejë drejt një qëllimi — me bonus badge.</p>
+        </div>
+        <button id="addGoalBtn" class="btn btn-primary">+ Qëllim i ri</button>
+      </div>
+      <div id="goalsGrid" class="goals-grid"></div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>🪙 Badges të fituara</h3></div>
+        <div id="badgesList" class="badges-list"></div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: CONTROLS (Parent only) ===================== -->
+    <section id="view-controls" class="view">
+      <div class="view-head-row">
+        <div>
+          <h2>Kontrolli i shpenzimeve</h2>
+          <p class="muted">Vendos limite dhe blloko kategori për fëmijët.</p>
+        </div>
+      </div>
+      <div id="controlsGrid" class="controls-grid"></div>
+    </section>
+
+    <!-- ===================== VIEW: AI ADVISOR ===================== -->
+    <section id="view-advisor" class="view">
+      <div class="view-head-row">
+        <div>
+          <h2>🤖 Këshilltari AI i shpenzimeve</h2>
+          <p class="muted">Analizë automatike e zakoneve financiare të familjes.</p>
+        </div>
+      </div>
+      <div id="advisorCards" class="advisor-cards"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+<div id="modalOverlay" class="modal-overlay hidden">
+  <div id="modalBox" class="modal-box"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
